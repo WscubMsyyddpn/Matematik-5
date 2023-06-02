@@ -1,0 +1,150 @@
+from math import sin, cos, sqrt, pi
+import matplotlib.pyplot as plt
+from matplotlib.ticker import EngFormatter, StrMethodFormatter
+
+fig, ax = plt.subplots()
+
+g = 9.8
+velocity = 12
+height = 2
+angle = 45
+
+
+def angle_change():
+  angle = 0
+  x_length_angle = []
+
+  for x in range(90):
+    launch_angle = angle
+
+    time = ((velocity * sin(launch_angle)) / g) + sqrt(((velocity * sin(launch_angle)) / g) ** 2 + 2 * height / g)
+    x_length = velocity * cos(launch_angle) * time
+
+    x_length_angle.append(x_length)
+
+    angle += (pi/180)
+  
+  return x_length_angle
+  
+
+def height_change():
+  height = 0
+  x_length_height = []
+
+  for y in range(20):  
+    initial_height = height
+
+    time = ((velocity * sin(angle)) / g) + sqrt(((velocity * sin(angle)) / g) ** 2 + (2 * initial_height / g))
+    x_length = velocity * cos(angle) * time
+
+    x_length_height.append(x_length)
+
+    height += 1
+  
+  return x_length_height
+    
+def velocity_change():
+  velocity = 0
+  x_length_velocity = []
+
+  for y in range(24):    
+    initial_velocity = velocity
+
+    time = ((initial_velocity * sin(angle)) / g) + sqrt(((initial_velocity * sin(angle)) / g) ** 2 + 2 * height / g)
+    x_length = velocity * cos(angle) * time
+
+    x_length_velocity.append(x_length)
+
+    velocity += 1
+    
+  return x_length_velocity
+
+
+def optimal_values():
+  opt_height = 2
+  opt_velocity = 12
+  opt_angle = (42 * (pi / 180))
+
+  time = ((opt_velocity * sin(opt_angle)) / g) + sqrt(((opt_velocity * sin(opt_angle)) / g) ** 2 + 2 * opt_height / g)
+  opt_x_length = opt_velocity * cos(opt_angle) * time
+
+  return opt_x_length
+  
+def main():
+
+  switch = False # True = optimal values    False = vary variables
+  plot = False # True = show plot, not bar    False = show bar, not plot
+
+  if switch == True:
+    opt_throw = optimal_values()
+    print(opt_throw)
+    quit()
+    
+  adjuster = "a"  # a = angle, h = height, v = velocity
+  
+  if adjuster == "a":
+    angle_list = angle_change()
+
+    max_throw_length = max(angle_list)
+    max_index = angle_list.index(max_throw_length)
+
+    ax.xaxis.set_major_formatter(StrMethodFormatter(u"{x:.0f}°"))
+    ax.yaxis.set_major_formatter(StrMethodFormatter(u"{x:.0f} m"))
+
+
+    if plot == False:
+      bar_colour = ["red" if p == max_throw_length else "blue" for p in angle_list]
+      ax.bar(range(90), angle_list, width = 0.50, color = bar_colour)
+      plt.xlabel("Utgångsvinkel")
+      plt.ylabel("Kastlängd")
+ 
+    else: 
+      plt.plot(range(90), angle_list, color = "blue", linewidth = 2.5)
+      plt.scatter(range(90)[max_index], angle_list[max_index], color = "black", marker='o', s=35, zorder=2)
+      plt.xlabel("Utgångsvinkel")
+      plt.ylabel("Kastlängd")        
+
+  if adjuster == "h":
+    height_list = height_change()
+ 
+    max_throw_length = max(height_list)
+    max_index = height_list.index(max_throw_length) + 1
+
+    ax.xaxis.set_major_formatter(StrMethodFormatter(u"{x:.0f} m"))
+    ax.yaxis.set_major_formatter(StrMethodFormatter(u"{x:.0f} m"))  
+
+    if plot == False:
+      ax.bar(range(20), height_list, width = 0.50, color = "blue")
+      plt.xlabel("Starthöjd")
+      plt.ylabel("Kastlängd")
+  
+    else:
+      plt.plot(range(20), height_list, color = "blue", linewidth = 2.5)
+      plt.xlabel("Starthöjd")
+      plt.ylabel("Kastlängd")
+
+  if adjuster == "v":
+    velocity_list = velocity_change()
+
+    max_throw_length = max(velocity_list)
+    max_index = velocity_list.index(max_throw_length) + 1
+
+    ax.xaxis.set_major_formatter(StrMethodFormatter(u"{x:.0f} m/s"))
+    ax.yaxis.set_major_formatter(StrMethodFormatter(u"{x:.0f} m"))  
+
+    if plot == False:
+      ax.bar(range(24), velocity_list, width = 0.50, color = "blue")
+      plt.xlabel("Initialhastighet")
+      plt.ylabel("Kastlängd")
+
+    else:
+      plt.plot(range(24), velocity_list, color = "blue", linewidth = 2.5)
+      plt.xlabel("Initialhastighet")
+      plt.ylabel("Kastlängd")     
+
+  print(max_index)
+  print(max_throw_length)
+  
+  plt.show()
+
+main()
